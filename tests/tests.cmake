@@ -2,7 +2,7 @@
 set(TEST_DIR "${PROJECT_SOURCE_DIR}/tests")
 
 ## Download and compile googltest - creduts to scrascit
-add_subdirectory("${TEST_DIR}/googletest")
+add_subdirectory("${PROJECT_SOURCE_DIR}/third_party/googletest")
 
 enable_testing()
 

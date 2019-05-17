@@ -5,6 +5,9 @@ project(mandelbrot)
 # options #
 option(BUILD_TESTS "Build tests and googletest" OFF) #off by default to not overload user
 
+# modules #
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/third_party/cmake_modules/")
+
 # version #
 set(MAJOR_VERSION 0)
 set(MINOR_VERSION 1a)
@@ -59,13 +62,18 @@ else()
 endif()
 
 ## Boost ##
-find_package(Boost REQUIRED COMPONENTS multiprecision)
+#set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost REQUIRED)
 target_include_directories(mandelbrot_lib SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(mandelbrot_lib ${Boost_libraries})
+
+## Floating point backend
+find_package(MPFR 2.0.0 REQUIRED)
+target_link_libraries(mandelbrot_lib ${MPFR_LIBRARIES})
 
 ## SFML ##
 find_package(SFML 2 REQUIRED COMPONENTS graphics window)
 target_link_libraries(mandelbrot sfml-graphics)
+target_include_directories(mandelbrot SYSTEM PUBLIC ${SFML_INCLUDE_PATH})
 
 ## HPX ? ##
 
