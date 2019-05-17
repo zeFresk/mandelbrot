@@ -30,4 +30,5 @@ private:
 
 	sf::Vector2f last_pos;
 	bool dragging;
+	size_t steps;
 };

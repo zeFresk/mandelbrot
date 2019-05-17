@@ -1,69 +1,55 @@
 #pragma once
 /*
-  Mandelbrot math related functions
+  Mandelbrot fractal representation
   zeFresk
 */
 
-#include <complex>
+#include "types.hpp"
+#include "mandelmaths.hpp"
+#include "colors.hpp"
+#include "std_backend.hpp"
 
-namespace mandelbrot {
-	//	###############################
-	//	### normalization functions ###
-	//	###############################
-	
-	// NOTE: All the following takes the index at which we diverged and the maxium number of iterations used along with last computed value. They then returns a real number
-	
-	// identity function, returns index as is
-	template <typename Floating_Type>
-	float identity(size_t index, size_t max_iterations, std::complex<Floating_Type> const& last) {
-		return static_cast<float>(index);
+// Class used to represent and compute efficiently the mandelbrot fractral
+// Backend contains the compute function
+template <typename Floating_Type, typename Complex_Type, typename Backend = Backend::Monothread<Floating_Type, Complex_Type>>
+class Mandelbrot_representation {
+public:
+	// create an instance using given parameters and space size pixelwise
+	Mandelbrot_representation(Parameters const& params, size_t width, size_t height) : 
+		params_{ params }, 
+		backend_{}, 
+		pixels_{ boost::extents[width][height][4], pixels_order(ordering, ascending) },
+		w_{ width }, 
+		h_{ height }  {	}
+
+	// non-copiable & non-movable
+	Mandelbrot_representation(Mandelbrot_representation const&) = delete;
+	Mandelbrot_representation(Mandelbrot_representation&&) = delete;
+	Mandelbrot_representation& operator=(Mandelbrot_representation const&) = delete;
+	Mandelbrot_representation& operator=(Mandelbrot_representation&&) = delete;
+
+	// compute all values
+	void compute() {
+		backend_.compute(pixels_, params_, w_, h_);
 	}
 
-	// Smooth coloring function, as in https://www.codingame.com/playgrounds/2358/how-to-plot-the-mandelbrot-set/adding-some-colors
-	inline float smooth_coloring(size_t index, size_t max_iterations, std::complex<Floating_Type> const& last) {
-		if (index == max_iterations)
-			return static_cast<float>(index);
-		return index + 1 - std::log(std::log2(std::abs(z)))
+
+	// return underlying pixels
+	const std::uint8_t* raw_pixels() const {
+		return pixels_.data();
 	}
 
-	// simply normalize output between 0 and 1
-	inline float one(size_t index, size_t max_iterations, std::complex<Floating_Type> const& last) {
-		return static_cast<float>(index) / static_cast<float>(max_iterations);
-	}
+private:
+	Parameters const& params_;
+	Backend backend_;
+	pixel_array pixels_;
+	size_t w_;
+	size_t h_;
+};
 
-	// Trait to get associated normalized function type given Floating_type
-	template <typename Floating_Type>
-	using normalized_function_type = typename float(*)(size_t, size_t, std::complex<Floating_Type> const&);
-
-	//	###############################
-	//	#### computation functions ####
-	//	###############################
-
-	// Iterate through mandelbrot function (zn=zn-1+c) up to 'iterations' times.
-	// Returns iteration at which we diverged.
-	template <typename Floating_Type>
-	size_t compute(std::complex<Floating_Type> const& c, size_t iterations) {
-		// optimizations
-		// detection of cardioid
-		decltype(c) z = (std::real(c) - 0.25) * (std::real(c) - 0.25) + std::imag(c) * std::imag(c);
-		if (z * (z + std::real(c) - 0.25) <= 0.25 * std::imag(c) * std::imag(c)) { // inside cardioid
-			return iterations;
-		}
-
-		// main computation
-		z = 0.;
-		for (size_t i = 0; i < iterations, ++i) {
-			z = z * z + c;
-			if (std::abs(z) > 2)
-				return i;
-		}
-		return iterations;
-	}
-
-	// Iterate through mandelbrot function but normalize output with the f function
-	// see mandelbrot::compute
-	template <typename Floating_Type>
-	float compute_normalized(std::complex<Floating_Type> const& c, size_t iterations, normalized_function_type<Floating_Type> f) {
-		return f(compute(c, iterations));
-	}
-}
+#if defined(_OPENMP)
+#include "openmp_backend.hpp"
+using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::OpenMP<real_t, complex_t>>;
+#else
+using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::Monothread<real_t, complex_t>>;
+#endif

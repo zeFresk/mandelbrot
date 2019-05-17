@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.2) # 3.10 needed for MSVC switches
+cmake_minimum_required(VERSION 3.9) # 3.9 needed for MSVC switches
 
 project(mandelbrot)
 
@@ -69,6 +69,13 @@ target_include_directories(mandelbrot_lib SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 ## Floating point backend
 find_package(MPFR 2.0.0 REQUIRED)
 target_link_libraries(mandelbrot_lib ${MPFR_LIBRARIES})
+
+## OpenMP backend
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+	set(_OPENMP)
+	target_link_libraries(mandelbrot_lib OpenMP::OpenMP_CXX)
+endif()
 
 ## SFML ##
 find_package(SFML 2 REQUIRED COMPONENTS graphics window)
