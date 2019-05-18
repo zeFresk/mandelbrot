@@ -18,7 +18,7 @@ public:
 	Mandelbrot_representation(Parameters const& params, size_t width, size_t height) : 
 		params_{ params }, 
 		backend_{}, 
-		pixels_{ boost::extents[width][height][4], pixels_order(ordering, ascending) },
+		pixels_{ width, height, 4 },
 		w_{ width }, 
 		h_{ height }  {	}
 
@@ -47,9 +47,12 @@ private:
 	size_t h_;
 };
 
-#if defined(_OPENMP)
-#include "openmp_backend.hpp"
-using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::OpenMP<real_t, complex_t>>;
+#if defined(CUDA_BACKEND)
+	#include "cuda_backend.hpp"
+	using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::CUDA<real_t, complex_t>>;
+#elif defined(OPENMP_BACKEND)
+	#include "openmp_backend.hpp"
+	using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::OpenMP<real_t, complex_t>>;
 #else
-using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::Monothread<real_t, complex_t>>;
+	using Mandelbrot = Mandelbrot_representation<real_t, complex_t, Backend::Monothread<real_t, complex_t>>;
 #endif

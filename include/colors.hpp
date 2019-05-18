@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cassert>
 #include <cmath>
+#include <array>
 
 template <class T, std::size_t N>
 constexpr size_t size(const T(&array)[N]) noexcept
@@ -38,6 +39,6 @@ color gradients_scale(float x, Container const& gradient = gradients::wikipedia)
 	assert(x <= 1.f && "x must be normalized !");
 	if (x == 1.f)
 		return { 0,0,0,255 }; //black
-	size_t index = static_cast<size_t>(x * static_cast<std::size_t>(std::size(gradient)));
+	size_t index = static_cast<size_t>(x * std::size(gradient));
 	return gradient[index];
 }

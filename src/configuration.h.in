@@ -1,0 +1,18 @@
+#pragma once
+/*
+  CMake configuration
+  zeFresk
+*/
+
+// Floating point precision
+#cmakedefine DOUBLE_FP
+#cmakedefine MPFR_FP
+#cmakedefine GMP_FP
+#cmakedefine BOOST_FP
+#cmakedefine PRECISION_DIGITS @PRECISION_DIGITS@
+
+// Backend related
+#cmakedefine OPENMP_BACKEND
+
+#cmakedefine CUDA_BACKEND
+

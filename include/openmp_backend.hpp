@@ -16,11 +16,11 @@ namespace Backend {
 			for (size_t y = 0; y < height; ++y) {
 				for (size_t x = 0; x < width; ++x) {
 					float norm = mandelbrot::compute_normalized(start + Complex_t{ x * params.precision, y * params.precision }, params.iterations);
-					auto color = gradients_scale(norm);
-					pixels[x][y][0] = color.r;
-					pixels[x][y][1] = color.g;
-					pixels[x][y][2] = color.b;
-					pixels[x][y][3] = color.a;
+					auto c = gradients_scale(norm);
+					pixels(x, y, 0) = c.r;
+					pixels(x, y, 1) = c.g;
+					pixels(x, y, 2) = c.b;
+					pixels(x, y, 3) = c.a;
 				}
 			}
 		}

@@ -33,10 +33,10 @@ void EventHandler::parse_kb_event(sf::Event const& ev, Parameters& p) {
 		p.center -= complex_t{ p.precision * steps, 0 };
 	}
 	else if (ev.key.code == sf::Keyboard::Subtract) {
-		p.precision *= 1.1;
+		p.precision *= static_cast<real_t>(1.1);
 	}
 	else if (ev.key.code == sf::Keyboard::Add) {
-		p.precision *= 0.9;
+		p.precision *= static_cast<real_t>(0.9);
 	}
 	else if (ev.key.code == sf::Keyboard::Multiply) {
 		p.iterations = static_cast<std::size_t>(p.iterations * 1.1);

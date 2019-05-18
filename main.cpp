@@ -9,7 +9,7 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(1280, 720), "Mandelbrot", (sf::Style::Close | sf::Style::Titlebar));
 	window.setFramerateLimit(60);
 
-	Parameters fractal_parameters{ complex_t(-0.04524074130409,0.9868162207157852), 0.005, 100};
+	Parameters fractal_parameters{ complex_t(static_cast<real_t>(0),static_cast<real_t>(0)), static_cast<real_t>(0.005), 100};
 	EventHandler handler{};
 
 	sf::Texture texture;
